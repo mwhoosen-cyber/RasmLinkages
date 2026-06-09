@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rasm & Qirāʾāt Linkage Dashboard</title>
+<style>
+:root {
+  --bg: #FAFAF7;
+  --bg-card: #FFFFFF;
+  --bg-soft: #F4F2EC;
+  --bg-hover: #F0EEE7;
+  --border: #E5E2D8;
+  --border-strong: #C9C4B5;
+  --text: #1F1D17;
+  --text-secondary: #6B6757;
+  --text-tertiary: #8F8B7B;
+  --accent: #5B4636;
+  --accent-soft: #EFE9DD;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+
+  /* Regional palette */
+  --rm-bg: #E1F5EE; --rm-fg: #085041; --rm-ring: #5FB8A0;
+  --rs-bg: #E6F1FB; --rs-fg: #0C447C; --rs-ring: #6FA6D8;
+  --rk-bg: #FAECE7; --rk-fg: #712B13; --rk-ring: #D88974;
+  --rb-bg: #FAEEDA; --rb-fg: #633806; --rb-ring: #D5A557;
+  --rmk-bg: #EEEDFE; --rmk-fg: #3C3489; --rmk-ring: #948CE0;
+
+  --ok-bg: #EAF3DE; --ok-fg: #27500A;
+  --exc-bg: #FCEBEB; --exc-fg: #791F1F; --exc-ring: #E24B4A;
+  --nr-bg: #FAEEDA; --nr-fg: #633806;
+  --cx-bg: #ECECEC; --cx-fg: #444;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1815;
+    --bg-card: #232019;
+    --bg-soft: #2A2620;
+    --bg-hover: #312D26;
+    --border: #3A352C;
+    --border-strong: #4F4838;
+    --text: #F0EDE3;
+    --text-secondary: #ADA68F;
+    --text-tertiary: #7F7866;
+    --accent: #E5D5B8;
+    --accent-soft: #3A322A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.2);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Header */
+header.hero {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+header.hero h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+header.hero .subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 760px;
+  line-height: 1.6;
+}
+header.hero .date {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Section headings */
+h2.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 2rem 0 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+h2.section-title::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+/* Key panel */
+.key-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+}
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.3rem;
+}
+
+.key-block h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+.key-block p {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 0.4rem;
+}
+.key-block .key-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+  font-size: 12.5px;
+}
+.key-block .key-row .swatch {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.key-block .key-row .desc { color: var(--text-secondary); }
+.key-block .key-row .desc strong { color: var(--text); font-weight: 600; }
+
+/* Pills */
+.pill {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+.pill-region { font-weight: 600; min-width: 26px; text-align: center; }
+.pill-reader { margin: 1px 2px 1px 0; }
+
+.rm { background: var(--rm-bg); color: var(--rm-fg); }
+.rs { background: var(--rs-bg); color: var(--rs-fg); }
+.rk { background: var(--rk-bg); color: var(--rk-fg); }
+.rb { background: var(--rb-bg); color: var(--rb-fg); }
+.rmk { background: var(--rmk-bg); color: var(--rmk-fg); }
+
+.exc-pill {
+  background: var(--exc-bg) !important;
+  color: var(--exc-fg) !important;
+  box-shadow: inset 0 0 0 1px var(--exc-ring);
+}
+
+.al-ok  { background: var(--ok-bg); color: var(--ok-fg); }
+.al-exc { background: var(--exc-bg); color: var(--exc-fg); box-shadow: inset 0 0 0 1px var(--exc-ring); }
+.al-nr  { background: var(--nr-bg); color: var(--nr-fg); }
+.al-cx  { background: var(--cx-bg); color: var(--cx-fg); }
+
+/* Stats strip */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+  margin: 1.4rem 0;
+}
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  box-shadow: var(--shadow);
+}
+.stat .num {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.1;
+}
+.stat .label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* Filters */
+.filters {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0.4rem 0;
+}
+.filter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  min-width: 78px;
+}
+.chip {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 4px 11px;
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  font-weight: 500;
+  user-select: none;
+}
+.chip:hover { background: var(--bg-hover); color: var(--text); }
+.chip.active {
+  background: var(--accent);
+  color: var(--bg-card);
+  border-color: var(--accent);
+}
+@media (prefers-color-scheme: dark) {
+  .chip.active { color: var(--bg); }
+}
+.chip-clear {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+}
+.chip-clear:hover { color: var(--text); }
+
+.search-box {
+  flex: 1;
+  min-width: 180px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+}
+.search-box:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Table */
+.table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+thead th {
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+tbody td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr.data-row { cursor: pointer; transition: background 0.08s ease; }
+tbody tr.data-row:hover td { background: var(--bg-soft); }
+
+.section-row td {
+  background: var(--bg-soft);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 9px 12px;
+}
+.section-row .sec-letter {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg-card);
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 18px;
+  font-size: 10px;
+  margin-right: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  .section-row .sec-letter { color: var(--bg); }
+}
+
+.ar {
+  font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", "Traditional Arabic", serif;
+  font-size: 17px;
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-weight: 500;
+  display: block;
+  line-height: 1.4;
+}
+.sm {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: block;
+  margin-top: 3px;
+  font-style: italic;
+}
+.verse-cell {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  font-size: 12px;
+}
+.region-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 2px 0;
+  font-size: 11.5px;
+}
+.region-arrow {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  margin: 0 2px;
+}
+.reader-block { margin: 2px 0; }
+.reader-block .label {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+  letter-spacing: 0.04em;
+}
+
+.expand-row td {
+  background: var(--bg-soft);
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.expand-content h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.expand-content p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.7rem;
+}
+
+/* Reader matrix */
+.matrix-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  box-shadow: var(--shadow);
+}
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  min-width: 800px;
+}
+.matrix th, .matrix td {
+  padding: 5px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.matrix thead th {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.matrix thead th.city-head {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  background: var(--bg-card);
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.matrix tbody th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-card);
+  color: var(--text);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  white-space: nowrap;
+  padding: 5px 8px;
+}
+.matrix-cell {
+  width: 28px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: help;
+}
+.matrix-cell.A { background: rgba(95, 184, 160, 0.18); color: var(--rm-fg); }
+.matrix-cell.B { background: rgba(213, 165, 87, 0.18); color: var(--rb-fg); }
+.matrix-cell.exc {
+  box-shadow: inset 0 0 0 1.5px var(--exc-ring);
+}
+.matrix-cell.na { color: var(--text-tertiary); background: var(--bg-soft); }
+
+.matrix-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+  padding: 0.7rem 1rem;
+  background: var(--bg-soft);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+.matrix-legend span.lg-sw {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Footer */
+.fn {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  line-height: 1.7;
+}
+.fn strong { color: var(--text); }
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Timeline */
+.timeline-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.4rem 1.4rem 1.6rem;
+  box-shadow: var(--shadow);
+}
+.tl-era {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 22px 0 10px 122px;
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+}
+.tl-era.first { padding-top: 10px; }
+.tl-row {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  padding: 11px 0;
+  position: relative;
+  transition: background 0.08s ease;
+}
+.tl-row:hover { background: var(--bg-soft); }
+.tl-date {
+  width: 110px;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding-top: 5px;
+  line-height: 1.4;
+  text-align: right;
+  padding-right: 14px;
+  font-weight: 500;
+}
+.tl-line-col {
+  width: 12px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+}
+.tl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px var(--bg-card);
+  z-index: 1;
+}
+.tl-vl {
+  width: 1.5px;
+  background: var(--border);
+  flex: 1;
+  min-height: 12px;
+  margin-top: 4px;
+}
+.tl-content {
+  flex: 1;
+  padding-left: 14px;
+  padding-right: 6px;
+  min-width: 0;
+}
+.tl-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.tl-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 4px;
+}
+.tl-badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+.tl-b {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tl-b-comp   { background: var(--rk-bg); color: var(--rk-fg); }
+.tl-b-script { background: var(--rb-bg); color: var(--rb-fg); }
+.tl-b-qira   { background: var(--rmk-bg); color: var(--rmk-fg); }
+.tl-b-ms     { background: var(--rm-bg); color: var(--rm-fg); }
+.tl-b-print  { background: var(--rs-bg); color: var(--rs-fg); }
+.tl-b-schol  { background: var(--accent-soft); color: var(--accent); }
+.tl-b-disp   { background: var(--exc-bg); color: var(--exc-fg); box-shadow: inset 0 0 0 1px var(--exc-ring); text-transform: none; font-style: italic; font-weight: 500; }
+.tl-hidden { display: none !important; }
+
+@media (max-width: 700px) {
+  .tl-era { padding-left: 0; padding-right: 0; text-align: center; }
+  .tl-date { width: 72px; font-size: 10px; }
+  .tl-title { font-size: 12.5px; }
+}
+
+@media (max-width: 800px) {
+  .container { padding: 1rem 0.7rem; }
+  header.hero h1 { font-size: 22px; }
+  table { font-size: 11.5px; }
+  .ar { font-size: 15px; }
+  thead th { padding: 8px 8px; }
+  tbody td { padding: 9px 8px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <h1>Rasm & Qirāʾāt Linkage</h1>
+  <p class="subtitle">
+    A row-level map of where the canonical reading traditions (<em>qirāʾāt</em>) trace back to the consonantal differences (<em>rasm</em>) preserved in the regional Uthmanic codices. Click any verse for context; use filters to isolate readers, cities, or alignment patterns.
+  </p>
+  <p class="date">Compiled from al-Dānī · Ibn al-Jazarī · van Putten · Sidky</p>
+</header>
+
+<!-- KEY -->
+<h2 class="section-title">Key & background</h2>
+<div class="key-panel">
+  <div class="key-grid">
+
+    <div class="key-block">
+      <h3>What is rasm?</h3>
+      <p>The bare consonantal skeleton of the Qurʾān — letters without diacritics or vowels. Two readers can recite the same rasm differently (vowel choice), but if the rasm itself differs, the variant must trace back to the written codex.</p>
+    </div>
+
+    <div class="key-block">
+      <h3>What are the regional codices?</h3>
+      <p>Around 650 CE, ʿUthmān dispatched master copies of the Qurʾān to the major garrison cities. Each copy preserved tiny textual choices specific to its city — added or absent <em>wāw</em>, swapped letters, present or omitted pronouns. The five cities below are the colour-coded anchors of this dashboard.</p>
+      <div class="key-row"><span class="pill pill-region rm swatch">M</span><span class="desc"><strong>Medina</strong> — the prophetic city; the Madinan codex is the base reference.</span></div>
+      <div class="key-row"><span class="pill pill-region rs swatch">Š</span><span class="desc"><strong>Syria/Damascus</strong> — the Šāmī codex, often (but not always) tracks Medina.</span></div>
+      <div class="key-row"><span class="pill pill-region rk swatch">K</span><span class="desc"><strong>Kufa</strong> — the largest Iraqi tradition; many readers, two rawīs of ʿĀṣim.</span></div>
+      <div class="key-row"><span class="pill pill-region rb swatch">B</span><span class="desc"><strong>Basra</strong> — the second Iraqi codex; often pairs with Kufa.</span></div>
+      <div class="key-row"><span class="pill pill-region rmk swatch">Mk</span><span class="desc"><strong>Mecca</strong> — the Hijazi sister to Medina; occasionally goes its own way.</span></div>
+    </div>
+
+    <div class="key-block">
+      <h3>What are qirāʾāt?</h3>
+      <p>The ten canonical reading traditions, each attached to a master-teacher rooted in one of the five cities. A reader's qirāʾa typically mirrors his city's rasm — when it does not, that's the most interesting data on this page.</p>
+      <div class="key-row"><span class="pill pill-reader rm swatch">Nāfiʿ</span><span class="desc">Medina</span></div>
+      <div class="key-row"><span class="pill pill-reader rm swatch">Abū Jaʿfar</span><span class="desc">Medina (one of the three after the seven)</span></div>
+      <div class="key-row"><span class="pill pill-reader rs swatch">Ibn ʿĀmir</span><span class="desc">Damascus / Syria</span></div>
+      <div class="key-row"><span class="pill pill-reader rk swatch">ʿĀṣim</span><span class="desc">Kufa — transmitted by Ḥafṣ (today's standard) and Šuʿba</span></div>
+      <div class="key-row"><span class="pill pill-reader rk swatch">Ḥamza</span><span class="desc">Kufa</span></div>
+      <div class="key-row"><span class="pill pill-reader rk swatch">Kisāʾī</span><span class="desc">Kufa</span></div>
+      <div class="key-row"><span class="pill pill-reader rk swatch">Khalaf</span><span class="desc">Kufa (tenth reader)</span></div>
+      <div class="key-row"><span class="pill pill-reader rb swatch">Abū ʿAmr</span><span class="desc">Basra</span></div>
+      <div class="key-row"><span class="pill pill-reader rb swatch">Yaʿqūb</span><span class="desc">Basra</span></div>
+      <div class="key-row"><span class="pill pill-reader rmk swatch">Ibn Kathīr</span><span class="desc">Mecca</span></div>
+    </div>
+
+    <div class="key-block">
+      <h3>Alignment badges</h3>
+      <div class="key-row"><span class="pill al-ok swatch">Aligned</span><span class="desc">Every reader recites in agreement with the rasm of his own city. This is the default and most common case — the tradition behaves as you'd expect.</span></div>
+      <div class="key-row"><span class="pill al-exc swatch">Exception</span><span class="desc">A reader crosses regional lines — his recitation matches a different city's codex. Almost always Ibn ʿĀmir (Syria) siding with Kufa; evidence the Šāmī codex made independent scribal calls.</span></div>
+      <div class="key-row"><span class="pill al-cx swatch">Complex</span><span class="desc">The split runs <em>inside</em> a single city — typically the two rawīs of ʿĀṣim (Ḥafṣ vs Šuʿba) parting ways, suggesting the Kufan codex itself was ambiguous at that spot.</span></div>
+      <div class="key-row"><span class="pill al-nr swatch">Not in regional record</span><span class="desc">The variant exists in the qirāʾāt literature but al-Dānī did not catalogue it as a regional codex difference. Often these are unique-reader cases or theologically loaded picks.</span></div>
+      <p style="margin-top:0.6rem;">A red-bordered reader pill <span class="pill pill-reader rs exc-pill" style="margin-left:2px;">Ibn ʿĀmir</span> marks a reader breaking from his city's codex on that specific verse.</p>
+    </div>
+
+    <div class="key-block">
+      <h3>Variant categories (A–E)</h3>
+      <p><strong>A.</strong> Added or absent connective particles (<em>wāw</em>, <em>fāʾ</em>) — sentence-glue differences.</p>
+      <p><strong>B.</strong> A whole word, pronoun, or syllable present in some codices and absent in others.</p>
+      <p><strong>C.</strong> Genuine root-letter swaps — the same skeleton differs by a single letter, changing meaning (e.g. "spread out" vs "raise up").</p>
+      <p><strong>D.</strong> <em>qāla</em> vs <em>qul</em> ("he said" vs "say!") — an alif present or absent in the rasm; theologically and grammatically significant.</p>
+      <p><strong>E.</strong> Variants attested in qirāʾāt literature but with <em>no</em> confirmed regional-codex correlate.</p>
+    </div>
+
+    <div class="key-block">
+      <h3>How to read this dashboard</h3>
+      <p>Each row = one verse with two attested rasm-level readings (<strong>A</strong> and <strong>B</strong>). The third column shows which cities' codices carried which reading; the fourth column shows which modern readers follow each. The matrix lower down flips this view: readers as columns, verses as rows.</p>
+      <p>The interesting cells are the red-bordered ones. Filter by <strong>Exception</strong> to isolate every reader who breaks from his city's rasm — these are van Putten's evidence that the Šāmī codex was not derivative of Medina.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- STATS -->
+<h2 class="section-title">At a glance</h2>
+<div class="stats-strip" id="stats">
+  <!-- populated by JS -->
+</div>
+
+<!-- FILTERS -->
+<h2 class="section-title">Filter</h2>
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Category</span>
+    <div id="cat-chips" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">City</span>
+    <div id="city-chips" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Reader</span>
+    <div id="reader-chips" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Alignment</span>
+    <div id="align-chips" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Search</span>
+    <input type="search" id="search" class="search-box" placeholder="Verse number, Arabic word, reader name…">
+    <button class="chip-clear" onclick="clearFilters()">Clear all</button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<h2 class="section-title">Verse-by-verse data</h2>
+<div class="table-wrap">
+  <table>
+    <colgroup>
+      <col style="width:7%">
+      <col style="width:18%">
+      <col style="width:18%">
+      <col style="width:18%">
+      <col style="width:28%">
+      <col style="width:11%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Verse</th>
+        <th>Reading A</th>
+        <th>Reading B</th>
+        <th>Regional codices</th>
+        <th>Modern qirāʾāt</th>
+        <th>Alignment</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <!-- populated by JS -->
+    </tbody>
+  </table>
+</div>
+
+<!-- MATRIX -->
+<h2 class="section-title">Reader-by-verse matrix</h2>
+<div class="matrix-wrap" id="matrix-wrap">
+  <table class="matrix" id="matrix">
+    <!-- populated by JS -->
+  </table>
+</div>
+<div class="matrix-legend">
+  <span><span class="lg-sw" style="background:rgba(95,184,160,0.5);"></span>Reading A</span>
+  <span><span class="lg-sw" style="background:rgba(213,165,87,0.5);"></span>Reading B</span>
+  <span><span class="lg-sw" style="background:transparent;box-shadow:inset 0 0 0 1.5px var(--exc-ring);"></span>Exception (breaks from city's codex)</span>
+  <span><span class="lg-sw" style="background:var(--bg-soft);"></span>Not attested for this reader</span>
+  <span style="margin-left:auto;color:var(--text-tertiary);font-size:11px;">Hover any cell for verse + reading</span>
+</div>
+
+<!-- TIMELINE -->
+<h2 class="section-title">Historical timeline — revelation to current scholarship</h2>
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Event type</span>
+    <div id="tl-chips" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+    <button class="chip-clear" onclick="clearTimelineFilters()">Show all</button>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Search</span>
+    <input type="search" id="tl-search" class="search-box" placeholder="Person, place, date, concept…">
+  </div>
+</div>
+<div class="timeline-wrap" id="timeline-wrap">
+  <!-- populated by JS -->
+</div>
+
+<!-- FOOTNOTES -->
+<div class="fn">
+  <strong>The three Ibn ʿĀmir exceptions (Q 2:259, 6:57, 18:86):</strong> All three show the Syrian reader siding with Kufa against the Madinan tradition he otherwise tracks. Van Putten (<em>JRAS</em> 2020) cites these as evidence the Šāmī codex made its own scribal decisions — it was not a derivative copy of Medina.<br><br>
+  <strong>The Q 21:112 / 21:4 Kufan splits:</strong> Within a single Kufan tradition, ʿĀṣim's two rawīs (Ḥafṣ vs Šuʿba) diverge. The Kufan codex itself was ambiguous at these points; individual teachers resolved the ambiguity differently, and that internal split has been preserved as canonical.<br><br>
+  <strong>Sources:</strong> Al-Dānī, <em>al-Muqniʿ fī rasm maṣāḥif al-amṣār</em>; Ibn al-Jazarī, <em>al-Nashr fī al-qirāʾāt al-ʿashr</em>; M. van Putten, <em>BSOAS</em> 82 (2019), <em>JRAS</em> (2020); H. Sidky, <em>JIQSA</em> 5 (2020).
+</div>
+
+</div>
+
+<script>
+// ============ DATA ============
+const READERS = [
+  { id: "naf", name: "Nāfiʿ", city: "M" },
+  { id: "abj", name: "Abū Jaʿfar", city: "M" },
+  { id: "iba", name: "Ibn ʿĀmir", city: "S" },
+  { id: "asm", name: "ʿĀṣim", city: "K" },
+  { id: "ham", name: "Ḥamza", city: "K" },
+  { id: "kis", name: "Kisāʾī", city: "K" },
+  { id: "khf", name: "Khalaf", city: "K" },
+  { id: "abu", name: "Abū ʿAmr", city: "B" },
+  { id: "yaq", name: "Yaʿqūb", city: "B" },
+  { id: "ibk", name: "Ibn Kathīr", city: "Mk" },
+];
+
+const CITY_INFO = {
+  M:  { name: "Medina",  cls: "rm",  short: "M" },
+  S:  { name: "Syria",   cls: "rs",  short: "Š" },
+  K:  { name: "Kufa",    cls: "rk",  short: "K" },
+  B:  { name: "Basra",   cls: "rb",  short: "B" },
+  Mk: { name: "Mecca",   cls: "rmk", short: "Mk" },
+};
+
+const CATEGORIES = {
+  A: "wāw / fāʾ connectives added or absent",
+  B: "whole word or syllable added or absent",
+  C: "different root letters (semantically significant)",
+  D: "qāla / qul — alif present or absent",
+  E: "qirāʾāt-only variants (no confirmed regional record)"
+};
+
+// Each row: { verse, category, readingA, readingB, regionsA, regionsB, readersA[], readersB[], alignment, note, expand }
+const DATA = [
+  { verse: "Q 3:133", cat: "A",
+    rA: { ar: "وَسَارِعُوا", sm: "with wāw" },
+    rB: { ar: "سَارِعُوا", sm: "without wāw" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "The Madinan and Syrian codices preserve a connective wāw at the head of the verse; Iraq and Mecca dropped it. Every reader recites in line with his own city — a textbook aligned case."
+  },
+  { verse: "Q 5:53", cat: "A",
+    rA: { ar: "وَيَقُولُ", sm: "with wāw" },
+    rB: { ar: "يَقُولُ", sm: "without wāw" },
+    regA: ["M","S","Mk"], regB: ["K","B"],
+    rdrA: [["naf"],["iba"],["ibk"]], rdrB: [["asm"],["ham"],["kis"],["abu"]],
+    align: "ok",
+    expand: "Mecca sides with the Hijaz–Syria group rather than its Iraqi neighbours here. Note Ibn Kathīr (Mecca) reads A, matching the Meccan codex."
+  },
+  { verse: "Q 26:217", cat: "A",
+    rA: { ar: "وَتَوَكَّلْ", sm: "wāw" },
+    rB: { ar: "فَتَوَكَّلْ", sm: "fāʾ" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "A wāw/fāʾ swap — not a missing letter but a different one. Both are connective, but the fāʾ implies stronger causal sequencing ('so trust…')."
+  },
+  { verse: "Q 42:30", cat: "A",
+    rA: { ar: "فَبِمَا", sm: "fāʾ present" },
+    rB: { ar: "بِمَا", sm: "fāʾ absent" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "Standard Madinan–Šāmī vs Iraq–Mecca split. Connective fāʾ either present or absent depending on city."
+  },
+  { verse: "Q 91:15", cat: "A",
+    rA: { ar: "وَلَا يَخَافُ", sm: "wāw" },
+    rB: { ar: "فَلَا يَخَافُ", sm: "fāʾ" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "The closing verse of Sūrat al-Šams. Hijaz–Syria reads with wāw, the rest with fāʾ."
+  },
+  { verse: "Q 2:132", cat: "B",
+    rA: { ar: "وَصَّى", sm: "verb form II" },
+    rB: { ar: "أَوْصَى", sm: "verb form IV" },
+    regA: ["M"], regB: ["S","K","B","Mk"],
+    rdrA: [["naf"],["abj"]], rdrB: [["iba"],["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "Medina alone reads the doubled-middle-letter form (وَصَّى). Every other codex, including Syria, has the form-IV variant with an initial alif. The Madinan reading carries more intensive/repeated nuance."
+  },
+  { verse: "Q 5:6", cat: "B",
+    rA: { ar: "لَامَسْتُمُ", sm: "form III — 'had contact with'" },
+    rB: { ar: "لَمَسْتُمُ", sm: "form I — 'touched'" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "A juristically significant difference: the form-III reading (mutual contact) was often understood as euphemism for intercourse, while form I is taken as ordinary touch. Drives different schools' rulings on ablution after physical contact."
+  },
+  { verse: "Q 6:32", cat: "B",
+    rA: { ar: "وَلَلدَّارُ", sm: "emphatic lām — Syria only" },
+    rB: { ar: "وَلَدَارُ", sm: "plain lām — all others" },
+    regA: ["S"], regB: ["M","K","B","Mk"],
+    rdrA: [["iba","Hišām"]], rdrB: [["naf"],["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "A Syria-only reading, preserved only in the Hišām transmission of Ibn ʿĀmir. The emphatic lām (لَلْـ) intensifies — 'truly the abode of the hereafter is better'."
+  },
+  { verse: "Q 9:100", cat: "B",
+    rA: { ar: "مِن تَحْتِهَا", sm: "with مِن — all except Mecca" },
+    rB: { ar: "تَحْتِهَا", sm: "without مِن — Mecca only" },
+    regA: ["M","S","K","B"], regB: ["Mk"],
+    rdrA: [["naf"],["iba"],["asm"],["ham"],["kis"],["abu"]], rdrB: [["ibk"]],
+    align: "ok",
+    expand: "Mecca stands alone in omitting the preposition. Ibn Kathīr, the Meccan reader, faithfully reflects his city's codex against everyone else."
+  },
+  { verse: "Q 28:48", cat: "B",
+    rA: { ar: "سِحْرَانِ", sm: "'two sorceries' — Kufa only" },
+    rB: { ar: "سَاحِرَانِ", sm: "'two sorcerers' — all others" },
+    regA: ["K"], regB: ["M","S","B","Mk"],
+    rdrA: [["asm"],["ham"],["kis"]], rdrB: [["naf"],["iba"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "Kufa-only reading — abstract noun ('two acts of sorcery') vs agent noun ('two sorcerers'). All three Kufan readers preserve it; the rest read the agent form."
+  },
+  { verse: "Q 43:71", cat: "B",
+    rA: { ar: "تَشْتَهِيهِ", sm: "with final hāʾ — Medina + Syria" },
+    rB: { ar: "تَشْتَهِي", sm: "without hāʾ" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "A pronoun cliticised onto the verb in some codices, omitted in others. Both readings are grammatical."
+  },
+  { verse: "Q 57:24", cat: "B",
+    rA: { ar: "اللَّهَ هُوَ الْغَنِيُّ", sm: "pronoun هُوَ present" },
+    rB: { ar: "اللَّهَ الْغَنِيُّ", sm: "pronoun absent" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "Presence or absence of the separator pronoun هُوَ. Syntactically both work; the variant is preserved in the rasm itself, not just a vowel choice."
+  },
+  { verse: "Q 2:259", cat: "C",
+    rA: { ar: "نُنشِزُهَا", sm: "'raise them up' (ز)" },
+    rB: { ar: "نُنشِرُهَا", sm: "'spread them out' (ر)" },
+    regA: ["S","K"], regB: ["M","B","Mk"],
+    rdrA: [["iba","exc"],["asm"],["ham"],["kis"]], rdrB: [["naf"],["abu"],["ibk"]],
+    align: "exc",
+    note: "Ibn ʿĀmir (Š) reads with K not M",
+    expand: "One of the three landmark exceptions. The Damascene reader sides with Kufa against Medina — strong evidence the Syrian codex made its own scribal call here, swapping a single consonant (ر→ز) and with it the verb's meaning."
+  },
+  { verse: "Q 6:57", cat: "C",
+    rA: { ar: "يَقُصُّ الْحَقَّ", sm: "'narrates truth' (ص)" },
+    rB: { ar: "يَقْضِ الْحَقَّ", sm: "'judges with truth' (ض)" },
+    regA: ["M","B","Mk"], regB: ["S","K"],
+    rdrA: [["naf"],["abu"],["ibk"]], rdrB: [["iba","exc"],["asm"],["ham"],["kis"]],
+    align: "exc",
+    note: "Ibn ʿĀmir (Š) reads with K not M",
+    expand: "Second of the three exceptions. Just two diacritical dots distinguish ص (narrate) from ض (judge), but the theological weight differs significantly. Syria's codex aligned with Kufa here."
+  },
+  { verse: "Q 18:86", cat: "C",
+    rA: { ar: "حَمِئَةٍ", sm: "'muddy spring'" },
+    rB: { ar: "حَامِيَةٍ", sm: "'warm spring'" },
+    regA: ["M","B","Mk"], regB: ["S","K"],
+    rdrA: [["naf"],["abu"],["ibk"]], rdrB: [["iba","exc"],["asm"],["ham"],["kis"]],
+    align: "exc",
+    note: "Ibn ʿĀmir (Š) reads with K — same pattern as Q 2:259 and 6:57",
+    expand: "Third and final of the well-known Šāmī–Kūfī exceptions. Dhū al-Qarnayn finds the sun setting in either a muddy or a warm spring. The fact that all three exceptions feature Ibn ʿĀmir crossing the same way suggests this was a systematic Šāmī tendency, not isolated."
+  },
+  { verse: "Q 23:112 & 114", cat: "D",
+    rA: { ar: "قَالَ", sm: "'He said' — past tense, alif present" },
+    rB: { ar: "قُلْ", sm: "'Say!' — imperative, alif absent" },
+    regA: ["M","S"], regB: ["K","B","Mk"],
+    rdrA: [["naf"],["abj"],["iba"]], rdrB: [["asm"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "ok",
+    expand: "The qāla/qul difference is a rasm-level matter: a written alif present or absent. Theologically the choice shifts whether God recounts what was said or commands a fresh imperative."
+  },
+  { verse: "Q 21:112", cat: "D",
+    rA: { ar: "قَالَ رَبِّ", sm: "most readers" },
+    rB: { ar: "قُلْ رَبِّ", sm: "Kufan sub-group" },
+    regA: ["M","S","Mk","B"], regB: ["K (partial)"],
+    rdrA: [["naf"],["iba"],["abu"],["ibk"],["asm","Šuʿba"]], rdrB: [["asm","Ḥafṣ"],["ham"],["kis"],["khf"]],
+    align: "cx",
+    note: "Kufan tradition split internally between ʿĀṣim's two rawīs",
+    expand: "A complex case: within Kufa, ʿĀṣim's two students (Ḥafṣ and Šuʿba) read differently. Šuʿba goes with the majority (قَالَ), Ḥafṣ — the transmission underlying today's standard print — reads the imperative (قُلْ). The Kufan codex itself appears to have been ambiguous at this spot."
+  },
+  { verse: "Q 21:4", cat: "D",
+    rA: { ar: "قَالَ", sm: "Ḥafṣ + most" },
+    rB: { ar: "قُلْ", sm: "Ḥamza + Kisāʾī" },
+    regA: [], regB: [],
+    rdrA: [["asm","Ḥafṣ"],["naf"],["iba"],["abu"]], rdrB: [["ham"],["kis"],["khf"]],
+    align: "cx",
+    note: "Kufan split: ʿĀṣim/Ḥafṣ reads قَالَ, Ḥamza/Kisāʾī read قُلْ",
+    expand: "Another internal Kufan split. Not catalogued by al-Dānī as a regional codex difference; the choice between past tense and imperative was resolved differently by different Kufan teachers."
+  },
+  { verse: "Q 17:93", cat: "D",
+    rA: { ar: "قَالَ سُبْحَانَ", sm: "'He said: Glory be…'" },
+    rB: { ar: "قُلْ سُبْحَانَ", sm: "'Say: Glory be…'" },
+    regA: ["Mk","S"], regB: ["M","K","B"],
+    rdrA: [["ibk"],["iba","exc"]], rdrB: [["naf"],["asm"],["ham"],["kis"],["abu"]],
+    align: "exc",
+    note: "Ibn ʿĀmir (Š) aligns with Mecca not Medina — unusual coalition",
+    expand: "An unusual coalition: Mecca and Syria pair up against Medina, Kufa, and Basra. Ibn ʿĀmir's qirāʾa diverges from the Madinan pattern he usually follows, illustrating that the Šāmī codex's independence wasn't strictly toward Kufa — it could go anywhere the scribes had decided."
+  },
+  { verse: "Q 18:36", cat: "E",
+    rA: { ar: "مِنْهُمَا", sm: "'from both of them'" },
+    rB: { ar: "مِنْهَا", sm: "'from it'" },
+    regA: [], regB: [],
+    rdrA: [["naf"],["iba"],["asm","Ḥafṣ","exc"]], rdrB: [["asm","Šuʿba"],["ham"],["kis"],["abu"],["ibk"]],
+    align: "nr",
+    note: "Ḥafṣ (Kufan) reads A with Medina/Syria — exceptional within ʿĀṣim's own tradition",
+    expand: "Not in al-Dānī's regional list. Within ʿĀṣim's school, Ḥafṣ reads with Medina–Syria and Šuʿba reads with the Iraqi/Meccan group. Today's standard Qurʾān (Ḥafṣ) thus reflects the minority Kufan choice here."
+  },
+  { verse: "Q 19:19", cat: "E",
+    rA: { ar: "لِأَهَبَ لَكِ", sm: "'that I [Gabriel] may give'" },
+    rB: { ar: "لِيَهَبَ لَكِ", sm: "'that He [God] may give'" },
+    regA: [], regB: [],
+    rdrA: [["naf"],["abj"],["iba"],["asm"],["ham"],["kis"],["ibk"]], rdrB: [["abu","Warš"],["yaq"]],
+    align: "nr",
+    note: "Theologically significant: Gabriel vs God as agent of the gift",
+    expand: "Mary's annunciation. The reading determines whether Gabriel speaks as agent ('that I may give') or as messenger relaying God's act ('that He may give'). Ṣanʿāʾ 1 preserves a third reading, لِنَهَبَ ('we give'), suggesting all three were live in the early manuscript tradition."
+  },
+  { verse: "Q 33:68", cat: "E",
+    rA: { ar: "كَبِيرًا", sm: "'a great curse' (ب)" },
+    rB: { ar: "كَثِيرًا", sm: "'many curses' (ث)" },
+    regA: [], regB: [],
+    rdrA: [["asm"]], rdrB: [["naf"],["abj"],["iba"],["ham"],["kis"],["khf"],["abu"],["yaq"],["ibk"]],
+    align: "nr",
+    note: "ʿĀṣim stands alone — no other reader or regional codex corroborates",
+    expand: "Both Ḥafṣ and Šuʿba transmit كَبِيرًا from ʿĀṣim, but no other canonical reader and no regional codex matches. A single-dot difference (ب vs ث) — but here the Kufan reader stands utterly alone."
+  }
+];
+
+const sectionMeta = {
+  A: { letter: "A", name: "wāw / fāʾ connectives added or absent" },
+  B: { letter: "B", name: "whole word or syllable added or absent" },
+  C: { letter: "C", name: "different root letters (most semantically significant)" },
+  D: { letter: "D", name: "qāla / qul (he said / say) — alif present or absent" },
+  E: { letter: "E", name: "qirāʾāt-only variants (no confirmed regional codex record)" }
+};
+
+// ============ STATE ============
+const state = {
+  cats: new Set(),
+  cities: new Set(),
+  readers: new Set(),
+  aligns: new Set(),
+  search: "",
+  expandedRow: null
+};
+
+// ============ HELPERS ============
+function readerById(id) { return READERS.find(r => r.id === id); }
+
+function readerPill(spec) {
+  // spec = ["id", optional rawī label, optional "exc"]
+  const id = spec[0];
+  const r = readerById(id);
+  if (!r) return spec[0];
+  const isExc = spec.includes("exc");
+  const rawī = spec[1] && spec[1] !== "exc" ? spec[1] : null;
+  const cityCls = CITY_INFO[r.city].cls;
+  const label = rawī ? `${rawī} ʿan ${r.name}` : r.name;
+  return `<span class="pill pill-reader ${cityCls}${isExc ? ' exc-pill' : ''}">${label}</span>`;
+}
+
+function regionPills(regs) {
+  return regs.map(r => {
+    if (CITY_INFO[r]) {
+      return `<span class="pill pill-region ${CITY_INFO[r].cls}">${CITY_INFO[r].short}</span>`;
+    }
+    return `<span style="font-size:11px;color:var(--text-secondary);">${r}</span>`;
+  }).join("");
+}
+
+function alignBadge(a, note) {
+  const map = {
+    ok:  { cls: "al-ok",  text: "Aligned" },
+    exc: { cls: "al-exc", text: "Exception" },
+    cx:  { cls: "al-cx",  text: "Complex" },
+    nr:  { cls: "al-nr",  text: "Not in regional record" }
+  };
+  const m = map[a];
+  let html = `<span class="pill ${m.cls}">${m.text}</span>`;
+  if (note) html += `<span class="sm">${note}</span>`;
+  return html;
+}
+
+// ============ RENDERING ============
+function renderStats() {
+  const el = document.getElementById("stats");
+  const total = DATA.length;
+  const aligned = DATA.filter(d => d.align === "ok").length;
+  const exceptions = DATA.filter(d => d.align === "exc").length;
+  const complex = DATA.filter(d => d.align === "cx").length;
+  const notreg = DATA.filter(d => d.align === "nr").length;
+  el.innerHTML = `
+    <div class="stat"><div class="num">${total}</div><div class="label">Variant verses</div></div>
+    <div class="stat"><div class="num" style="color:var(--ok-fg);">${aligned}</div><div class="label">Aligned</div></div>
+    <div class="stat"><div class="num" style="color:var(--exc-fg);">${exceptions}</div><div class="label">Exceptions</div></div>
+    <div class="stat"><div class="num" style="color:var(--cx-fg);">${complex}</div><div class="label">Complex</div></div>
+    <div class="stat"><div class="num" style="color:var(--nr-fg);">${notreg}</div><div class="label">Not in regional record</div></div>
+    <div class="stat"><div class="num">${READERS.length}</div><div class="label">Canonical readers</div></div>
+  `;
+}
+
+function renderFilters() {
+  // Category chips
+  const catEl = document.getElementById("cat-chips");
+  catEl.innerHTML = Object.keys(CATEGORIES).map(c =>
+    `<button class="chip" data-cat="${c}">${c} — ${CATEGORIES[c].split(' ').slice(0,3).join(' ')}…</button>`
+  ).join("");
+  catEl.querySelectorAll(".chip").forEach(b => {
+    b.onclick = () => toggleSet(state.cats, b.dataset.cat, b);
+  });
+
+  // City chips
+  const cityEl = document.getElementById("city-chips");
+  cityEl.innerHTML = Object.entries(CITY_INFO).map(([k,v]) =>
+    `<button class="chip" data-city="${k}"><span class="pill pill-region ${v.cls}" style="margin-right:4px;">${v.short}</span>${v.name}</button>`
+  ).join("");
+  cityEl.querySelectorAll(".chip").forEach(b => {
+    b.onclick = () => toggleSet(state.cities, b.dataset.city, b);
+  });
+
+  // Reader chips
+  const rdrEl = document.getElementById("reader-chips");
+  rdrEl.innerHTML = READERS.map(r =>
+    `<button class="chip" data-reader="${r.id}"><span class="pill pill-reader ${CITY_INFO[r.city].cls}" style="margin-right:4px;">${r.name}</span></button>`
+  ).join("");
+  rdrEl.querySelectorAll(".chip").forEach(b => {
+    b.onclick = () => toggleSet(state.readers, b.dataset.reader, b);
+  });
+
+  // Alignment chips
+  const alEl = document.getElementById("align-chips");
+  const aligns = [
+    ["ok","Aligned","al-ok"],
+    ["exc","Exception","al-exc"],
+    ["cx","Complex","al-cx"],
+    ["nr","Not in regional record","al-nr"]
+  ];
+  alEl.innerHTML = aligns.map(([k,name,cls]) =>
+    `<button class="chip" data-align="${k}"><span class="pill ${cls}" style="margin-right:4px;">${name}</span></button>`
+  ).join("");
+  alEl.querySelectorAll(".chip").forEach(b => {
+    b.onclick = () => toggleSet(state.aligns, b.dataset.align, b);
+  });
+
+  // Search
+  document.getElementById("search").oninput = (e) => {
+    state.search = e.target.value.toLowerCase().trim();
+    renderTable();
+  };
+}
+
+function toggleSet(set, val, btn) {
+  if (set.has(val)) { set.delete(val); btn.classList.remove("active"); }
+  else { set.add(val); btn.classList.add("active"); }
+  renderTable();
+}
+
+function clearFilters() {
+  state.cats.clear(); state.cities.clear(); state.readers.clear(); state.aligns.clear();
+  state.search = "";
+  document.getElementById("search").value = "";
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+  renderTable();
+}
+
+function rowMatches(row) {
+  if (state.cats.size && !state.cats.has(row.cat)) return false;
+  if (state.aligns.size && !state.aligns.has(row.align)) return false;
+  if (state.cities.size) {
+    const inA = row.regA.some(r => state.cities.has(r));
+    const inB = row.regB.some(r => state.cities.has(r));
+    if (!inA && !inB) return false;
+  }
+  if (state.readers.size) {
+    const all = [...row.rdrA.flat(), ...row.rdrB.flat()];
+    if (![...state.readers].some(id => all.includes(id))) return false;
+  }
+  if (state.search) {
+    const hay = [
+      row.verse, row.cat,
+      row.rA.ar, row.rA.sm, row.rB.ar, row.rB.sm,
+      ...row.rdrA.flat().map(s => readerById(s)?.name || s),
+      ...row.rdrB.flat().map(s => readerById(s)?.name || s),
+      row.expand || "", row.note || ""
+    ].join(" ").toLowerCase();
+    if (!hay.includes(state.search)) return false;
+  }
+  return true;
+}
+
+function renderTable() {
+  const tbody = document.getElementById("tbody");
+  const visible = DATA.filter(rowMatches);
+
+  if (!visible.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">No verses match the current filters. <button class="chip-clear" onclick="clearFilters()">Clear filters</button></td></tr>`;
+    return;
+  }
+
+  let html = "";
+  let currentCat = null;
+  visible.forEach((row, idx) => {
+    if (row.cat !== currentCat) {
+      currentCat = row.cat;
+      const m = sectionMeta[row.cat];
+      html += `<tr class="section-row"><td colspan="6"><span class="sec-letter">${m.letter}</span>${m.name}</td></tr>`;
+    }
+
+    const regAhtml = row.regA.length ? `${regionPills(row.regA)} <span class="region-arrow">→ A</span>` : "";
+    const regBhtml = row.regB.length ? `${regionPills(row.regB)} <span class="region-arrow">→ B</span>` : "";
+    const regCell = (regAhtml || regBhtml)
+      ? `<div class="region-line">${regAhtml}</div><div class="region-line">${regBhtml}</div>`
+      : `<span style="font-size:11px;color:var(--text-tertiary);font-style:italic;">Not in al-Dānī's regional list</span>`;
+
+    const rdrA = row.rdrA.map(readerPill).join("");
+    const rdrB = row.rdrB.map(readerPill).join("");
+    const isExpanded = state.expandedRow === row.verse;
+
+    html += `
+      <tr class="data-row" data-verse="${row.verse}">
+        <td class="verse-cell">${row.verse}</td>
+        <td><span class="ar">${row.rA.ar}</span><span class="sm">${row.rA.sm}</span></td>
+        <td><span class="ar">${row.rB.ar}</span><span class="sm">${row.rB.sm}</span></td>
+        <td>${regCell}</td>
+        <td>
+          <div class="reader-block"><span class="label">A:</span>${rdrA}</div>
+          <div class="reader-block"><span class="label">B:</span>${rdrB}</div>
+        </td>
+        <td>${alignBadge(row.align, row.note)}</td>
+      </tr>`;
+
+    if (isExpanded && row.expand) {
+      html += `
+        <tr class="expand-row">
+          <td colspan="6">
+            <div class="expand-content">
+              <h4>Context</h4>
+              <p>${row.expand}</p>
+            </div>
+          </td>
+        </tr>`;
+    }
+  });
+
+  tbody.innerHTML = html;
+
+  tbody.querySelectorAll(".data-row").forEach(r => {
+    r.onclick = () => {
+      const v = r.dataset.verse;
+      state.expandedRow = state.expandedRow === v ? null : v;
+      renderTable();
+    };
+  });
+}
+
+function renderMatrix() {
+  const el = document.getElementById("matrix");
+  // For each reader build column; for each verse build row.
+  // Determine which reading (A or B) the reader takes for each verse.
+  function readerReadingFor(row, readerId) {
+    const inA = row.rdrA.some(spec => spec[0] === readerId);
+    const inB = row.rdrB.some(spec => spec[0] === readerId);
+    if (inA && !inB) {
+      const spec = row.rdrA.find(s => s[0] === readerId);
+      return { reading: "A", exc: spec.includes("exc") };
+    }
+    if (inB && !inA) {
+      const spec = row.rdrB.find(s => s[0] === readerId);
+      return { reading: "B", exc: spec.includes("exc") };
+    }
+    if (inA && inB) return { reading: "AB", exc: true };
+    return { reading: null, exc: false };
+  }
+
+  // group readers by city for headers
+  const cityOrder = ["M","S","K","B","Mk"];
+  const grouped = cityOrder.map(c => ({
+    city: c,
+    readers: READERS.filter(r => r.city === c)
+  }));
+
+  let html = "<thead>";
+  html += "<tr><th class='city-head' style='background:var(--bg-card);'></th>";
+  grouped.forEach(g => {
+    html += `<th class="city-head" colspan="${g.readers.length}" style="border-bottom:1px solid var(--border);">${CITY_INFO[g.city].name}</th>`;
+  });
+  html += "</tr><tr><th>Verse</th>";
+  grouped.forEach(g => {
+    g.readers.forEach(r => {
+      html += `<th><span class="pill pill-reader ${CITY_INFO[r.city].cls}">${r.name}</span></th>`;
+    });
+  });
+  html += "</tr></thead><tbody>";
+
+  DATA.forEach(row => {
+    html += `<tr><th>${row.verse} <span style="font-size:9px;color:var(--text-tertiary);">(${row.cat})</span></th>`;
+    grouped.forEach(g => {
+      g.readers.forEach(r => {
+        const rr = readerReadingFor(row, r.id);
+        if (rr.reading === null) {
+          html += `<td class="matrix-cell na" title="${row.verse} · ${r.name}: not attested separately">—</td>`;
+        } else if (rr.reading === "AB") {
+          html += `<td class="matrix-cell exc" title="${row.verse} · ${r.name}: rawīs split">∗</td>`;
+        } else {
+          const reading = rr.reading;
+          const arabicReading = reading === "A" ? row.rA.ar : row.rB.ar;
+          const excTag = rr.exc ? " (breaks from city's codex)" : "";
+          html += `<td class="matrix-cell ${reading}${rr.exc ? ' exc' : ''}" title="${row.verse} · ${r.name}: ${arabicReading}${excTag}">${reading}</td>`;
+        }
+      });
+    });
+    html += "</tr>";
+  });
+  html += "</tbody>";
+  el.innerHTML = html;
+}
+
+// ============ TIMELINE DATA ============
+const ERAS = [
+  { label: "Revelation & first compilation — c. 610–644 CE", events: [
+    { date: "c. 610 CE", title: "First revelation", desc: "Prophet Muḥammad receives the first revelation in Cave Ḥirāʾ; transmission is oral; no written text yet.", type: "comp" },
+    { date: "610–632 CE", title: "Written fragments accumulate", desc: "Companions record verses on palm leaves, flat bones, leather, papyrus and pottery shards. Dedicated scribes appointed, including Zayd ibn Thābit, Ubayy ibn Kaʿb, and ʿAlī ibn Abī Ṭālib.", type: "comp" },
+    { date: "632 CE / 11 AH", title: "Death of the Prophet", desc: "No single compiled manuscript exists. Text lives in memory and in scattered written fragments held by individual companions.", type: "comp" },
+    { date: "633 CE / 12 AH", title: "Battle of Yamāma", desc: "70 or more ḥuffāẓ (Qurʾān memorisers) killed fighting the Ridda wars; concern grows that oral tradition could be lost.", type: "comp" },
+    { date: "633–634 CE / 12–13 AH", title: "Abū Bakr's compilation — the suhuf", desc: "Caliph Abū Bakr commissions Zayd ibn Thābit to assemble written fragments; material validated by two witnesses per verse. Produces the suhuf (sheets), not a bound codex.", type: "comp" },
+    { date: "634–644 CE", title: "Suhuf pass to Ḥafṣa", desc: "After Abū Bakr's death the suhuf pass to Caliph ʿUmar ibn al-Khaṭṭāb, then on his death to his daughter Ḥafṣa bint ʿUmar for safekeeping.", type: "comp" },
+  ]},
+  { label: "Uthmanic standardisation — c. 644–656 CE", events: [
+    { date: "c. 644–650 CE / c. 25 AH", title: "Recitation disputes trigger project", desc: "Conflicts between armies over correct recitation prompt general Ḥudayfa ibn al-Yamān to ask Caliph ʿUthmān to standardise the text.", type: "comp", disp: "Exact date disputed — traditional sources range 25–30 AH" },
+    { date: "c. 650 CE", title: "Scribal committee formed", desc: "Committee: Zayd ibn Thābit (chair), ʿAbdullāh ibn al-Zubayr, Saʿīd ibn al-ʿĀṣ, ʿAbd al-Raḥmān ibn al-Ḥārith. Ḥafṣa's suhuf used as master copy; Qurayšī dialect prioritised for ambiguous cases.", type: "comp" },
+    { date: "c. 650 CE", title: "Regional copies dispatched", desc: "Multiple copies (sources vary: 4–7) sent to Medina, Mecca, Kufa, Basra, and Damascus. ~40 small rasm-level differences between copies now documented by al-Dānī in al-Muqniʿ.", type: "comp", disp: "Number of copies (4–7) varies across classical sources" },
+    { date: "c. 650 CE", title: "Destruction of other manuscripts ordered", desc: "ʿUthmān orders all non-standard manuscripts burned or destroyed. Compliance was incomplete — some codices survived in private hands for over a century.", type: "comp", disp: "Extent of compliance genuinely uncertain" },
+    { date: "c. 650 CE", title: "Ibn Masʿūd refuses to comply", desc: "ʿAbdullāh ibn Masʿūd refuses to surrender his mushaf in Kufa; his reading tradition — which omits Suras 1, 113 and 114 and includes variant wording — persists in Kufa for over a century.", type: "comp" },
+    { date: "656 CE / 35 AH", title: "Assassination of ʿUthmān", desc: "ʿUthmān killed during his first fitna. Regional copies already distributed; the standardisation process is structurally complete.", type: "comp" },
+  ]},
+  { label: "Diacritics & script development — c. 650–800 CE", events: [
+    { date: "c. 650 CE", title: "Uthmanic rasm has no dots or vowels", desc: "The dispatched copies are written in defective Hijāzī script — no consonantal distinguishing dots (iʿjām), no vowel marks (tašqīl). Readability depends entirely on prior knowledge and oral tradition.", type: "script" },
+    { date: "c. 665 CE / 45 AH", title: "First vowel notation ordered", desc: "Governor Ziyād ibn Abīhi (d. 53/673) asks Abū al-Aswad al-Duʾalī to develop a vowel system; the immediate prompt is a mispronunciation of Q 9:3 that altered the meaning.", type: "script", disp: "Some traditions attribute the commission to a later governor" },
+    { date: "c. 668–688 CE / 69 AH", title: "Abū al-Aswad's colored-dot system", desc: "Abū al-Aswad al-Duʾalī (c. 603–688 CE) introduces colored dots — one above for fatḥa, one below for kasra, one beside for ḍamma, two for tanwīn. First written vowel notation for the Qurʾān.", type: "script" },
+    { date: "c. 685–705 CE", title: "Caliph ʿAbd al-Malik's administrative reforms", desc: "Arabisation of imperial administration increases urgency to standardise Arabic script across the empire.", type: "script" },
+    { date: "c. 694–714 CE / 75–95 AH", title: "Al-Ḥajjāj orders consonantal dotting", desc: "Governor of Iraq al-Ḥajjāj ibn Yūsuf orders Naṣr ibn ʿĀṣim al-Laythī (d. 89/708) and Yaḥyā ibn Yaʿmar to add distinguishing dots (iʿjām) to separate ب/ت/ث/ن/ي etc.", type: "script", disp: "Al-Ḥajjāj's role is in adding dotting, not changing the rasm (van Putten 2019 confirms rasm archetype predates him)" },
+    { date: "c. 707–708 CE / 89 AH", title: "Consonantal dotting systematised", desc: "Naṣr ibn ʿĀṣim and Yaḥyā ibn Yaʿmar complete a systematic dot system. Manuscripts can now be read without prior memorisation for consonant identification.", type: "script" },
+    { date: "c. 750–786 CE / 170 AH", title: "Al-Khalīl's modern diacritics system", desc: "Al-Khalīl ibn Aḥmad al-Farāhīdī (d. 170/786) replaces Abū al-Aswad's colored dots with letter-shaped marks — the fatḥa, kasra, ḍamma, sukūn, šadda, and hamza notation still in universal use today.", type: "script" },
+    { date: "Late 8th century CE", title: "Two-layer notation complete", desc: "The Uthmanic rasm now has a stable upper layer (diacritics) sitting on the original lower layer (consonantal skeleton). The two layers are physically distinguishable in manuscripts.", type: "script" },
+  ]},
+  { label: "Qirāʾāt tradition formation — c. 700–940 CE", events: [
+    { date: "d. 118/736 CE", title: "Ibn ʿĀmir — Damascus", desc: "Major reader of Syria; his tradition (transmitted by Hišām and Ibn Dhakwān) preserves the Damascene regional rasm. Notably breaks from the Madinan tradition at Q 2:259, 6:57 and 18:86.", type: "qira" },
+    { date: "d. 120/738 CE", title: "Ibn Kathīr — Mecca", desc: "Major reader of Mecca; transmits the Meccan regional rasm. His tradition (Bazzī and Qunbul) consistently aligns with the Kufan-Basran bloc against Medina on most rasm variants.", type: "qira" },
+    { date: "d. 127/745 CE", title: "ʿĀṣim — Kufa", desc: "Major reader of Kufa. Two rawis — Ḥafṣ (d. 796) and Šuʿba (d. 809) — diverge on several rasm-level variants, suggesting the Kufan codex was genuinely ambiguous at certain points. Ḥafṣ's version becomes the modern global standard.", type: "qira" },
+    { date: "d. 130/747 CE", title: "Abū Jaʿfar — Medina", desc: "One of the Ten; Madinan tradition. Largely agrees with Nāfiʿ.", type: "qira" },
+    { date: "d. 154/770 CE", title: "Abū ʿAmr — Basra", desc: "Major reader of Basra; transmits the Basran regional rasm. His tradition (Dūrī and Sūsī) is still in active use in Sudan and parts of West Africa.", type: "qira" },
+    { date: "d. 156/773 CE", title: "Ḥamza — Kufa", desc: "Major reader of Kufa; his distinctive readings include Q 10:30 (تَبْلُو instead of تَتْلُو) and multiple qāla/qul differences that break from the Kufan majority.", type: "qira" },
+    { date: "d. 169/785 CE", title: "Nāfiʿ — Medina", desc: "Major reader of Medina. Two rawis — Warš (d. 812) and Qālūn (d. 835) — transmit the Madinan tradition. Warš remains the standard in Morocco, Algeria, and West Africa today.", type: "qira" },
+    { date: "d. 189/805 CE", title: "al-Kisāʾī — Kufa", desc: "Major reader of Kufa; one of the Seven. His unique reading of Q 17:102 (لَقَدْ عَلِمْتُ — 'I know' rather than 'you know') radically changes the confrontation between Moses and Pharaoh.", type: "qira" },
+    { date: "d. 205/820 CE", title: "Yaʿqūb — Basra", desc: "One of the Ten; Basran tradition. Largely agrees with Abū ʿAmr.", type: "qira" },
+    { date: "d. 229/843 CE", title: "Khalaf al-ʿĀšir — Kufa", desc: "One of the Ten; also transmits the reading of Ḥamza.", type: "qira" },
+    { date: "324 AH / 936 CE", title: "Ibn Mujāhid canonises the Seven", desc: "Ibn Mujāhid (d. 324/936) publishes Kitāb al-Sabʿa fī al-qirāʾāt, fixing exactly seven canonical readings. The choice of seven was controversial — critics noted it was not divinely mandated and excluded many legitimate traditional readers.", type: "qira", disp: "Selection criteria for the seven were disputed in Ibn Mujāhid's own lifetime" },
+    { date: "c. 328/939 CE", title: "Ibn Šannabudh prosecuted", desc: "Ibn Šannabudh (d. 939) publicly tried and forced to recant for using Ibn Masʿūd's non-canonical readings in prayer. Marks the effective closure of non-Uthmanic recitation in public worship.", type: "qira" },
+  ]},
+  { label: "Classical scholarship — c. 940–1500 CE", events: [
+    { date: "444 AH / 1053 CE", title: "Al-Dānī: al-Muqniʿ & al-Taysīr", desc: "Al-Dānī (d. 444/1053) documents the ~40 rasm-level differences between the regional Uthmanic codices in al-Muqniʿ fī rasm maṣāḥif al-amṣār, and the seven readings in al-Taysīr. The primary classical source for regional rasm differences.", type: "schol" },
+    { date: "c. 12th–13th century CE", title: "Tajwīd formalised", desc: "The science of Tajwīd (precision recitation rules — articulation points, elongation, assimilation) becomes a fully independent academic discipline, transmitted alongside the qirāʾāt.", type: "qira" },
+    { date: "833 AH / 1429 CE", title: "Ibn al-Jazarī: al-Nashr — the Ten", desc: "Ibn al-Jazarī (d. 833/1429) publishes al-Nashr fī al-qirāʾāt al-ʿashr, expanding the canonical traditions from seven to ten. Becomes the definitive reference for all ten traditions and their chains of transmission.", type: "schol" },
+  ]},
+  { label: "Early print era — 1537–1906 CE", events: [
+    { date: "1537–1538 CE", title: "Venice — first printed Quran (Paganini)", desc: "Paganino and Alessandro Paganini print the first Arabic Quran in Venice, probably for Ottoman export. Nearly the entire print run was destroyed. A single copy was found in 1987 in a Franciscan library on Isola di San Michele, Venice.", type: "print" },
+    { date: "1694 CE", title: "Hamburg — Hinckelmann edition", desc: "Abraham Hinckelmann's edition; first printed Quran to circulate widely in Europe. Fully vocalised text with typographic errors. The authoritative European edition for a century.", type: "print" },
+    { date: "1698 CE", title: "Padua — Marracci edition", desc: "Ludovico Marracci's two-volume edition with Arabic text and Latin translation; influential in European Quranic scholarship until the 19th century.", type: "print" },
+    { date: "1787 CE", title: "St. Petersburg — first Muslim printing", desc: "First Quran printed by Muslims, commissioned by Empress Catherine the Great of Russia for her Muslim subjects. Printed several times until 1798; prepared by a leading calligrapher.", type: "print" },
+    { date: "1833 CE", title: "Egypt — first Egyptian printing", desc: "Printed under Muḥammad ʿAlī Pāšā; ordered confiscated and destroyed by al-Azhar on grounds of printing errors and impure ink.", type: "print" },
+    { date: "1834 CE", title: "Leipzig — Flügel edition", desc: "Gustav Flügel's edition; becomes the standard Western academic reference for the 19th century. Uses a non-Kufan verse-numbering system different from the Cairo edition, creating concordance problems in older Western scholarship.", type: "schol" },
+    { date: "1860 CE", title: "Nöldeke: Geschichte des Qorāns", desc: "Theodor Nöldeke's foundational Western critical study; first systematic historical analysis of the Quranic text. Establishes the framework for Western source-critical scholarship.", type: "schol" },
+    { date: "1872 CE", title: "Istanbul — Ottoman imperial edition", desc: "Ottoman imperial printing; widely distributed across the Ottoman world.", type: "print" },
+    { date: "1907 CE", title: "Al-Azhar committee begins", desc: "Al-Azhar committee of scholars in Egypt begins a 17-year project to produce a definitive standard printed edition; supported by King Fuʾād I.", type: "comp" },
+  ]},
+  { label: "Modern standardisation — 1924–1985 CE", events: [
+    { date: "10 July 1924 CE", title: "Cairo / King Fuʾād edition published", desc: "Printed by the Amiri Press, Bulaq, Cairo. Based on Ḥafṣ ʿan ʿĀṣim. Standardises verse numbering (Kufan system), basmalah placement, and chapter attribution. First modern mechanically printed Quran with fully standardised diacritics and layout. Gradually becomes the global standard.", type: "comp" },
+    { date: "c. 1924–1950s", title: "Cairo edition becomes global standard", desc: "Displaces earlier regional printings. Large numbers of pre-1924 muṣḥafs reportedly disposed of in the Nile. Since 1950 it has been the essential reference for European researchers and academics.", type: "comp" },
+    { date: "1924–1933 CE", title: "Bergsträsser's photographic archive", desc: "Gotthelf Bergsträsser begins photographing manuscripts of variant Quranic readings; project left incomplete at his death in a mountaineering accident (1933); continued by Otto Pretzl.", type: "schol" },
+    { date: "1937 CE", title: "Jeffery: Materials for the History", desc: "Arthur Jeffery publishes Materials for the History of the Text of the Qurʾān; the first systematic English-language documentation of companion codex variants, drawing on Ibn Abī Dāwūd's Kitāb al-Maṣāḥif.", type: "schol" },
+    { date: "1944 CE", title: "Bergsträsser archive destroyed", desc: "Allied bombing of Munich destroys the entire Bergsträsser/Pretzl photographic archive — a catastrophic and irreversible loss for Quranic manuscript scholarship.", type: "schol" },
+    { date: "1984/85 CE", title: "King Fahd Complex established", desc: "King Fahd Complex for Printing the Holy Qurʾān established in Medina. Prints hundreds of millions of copies globally. Produces editions of Ḥafṣ (dominant), Warš, Qālūn, al-Dūrī and other qirāʾāt.", type: "comp" },
+  ]},
+  { label: "Modern manuscript scholarship — 1972–present", events: [
+    { date: "1972 CE", title: "Ṣanʿāʾ manuscript hoard discovered", desc: "During restoration of the Great Mosque of Ṣanʿāʾ, workers find a 'paper graveyard' (makhzan) in the attic — tens of thousands of Quranic fragments, including the palimpsest that will prove to be the only known non-Uthmanic codex.", type: "ms" },
+    { date: "1977 CE", title: "Wansbrough: Quranic Studies", desc: "John Wansbrough argues the Quran was compiled in the 8th–9th centuries CE — far later than the traditional account. Thesis rejected by the great majority of subsequent scholarship.", type: "schol", disp: "Widely rejected; incompatible with manuscript evidence" },
+    { date: "1979 CE", title: "Puin begins Ṣanʿāʾ cataloguing", desc: "Gerd-R. Puin and H.-C. Graf von Bothmer begin formal cataloguing of Ṣanʿāʾ manuscripts; Puin's observations that the lower text differs from the standard edition spark early controversy.", type: "ms" },
+    { date: "1999 CE", title: "Atlantic article on Ṣanʿāʾ", desc: "'What Is the Koran?' in The Atlantic brings the Ṣanʿāʾ manuscript controversy to wide public attention for the first time.", type: "ms" },
+    { date: "2003 CE", title: "Al-Aʿẓamī: History of the Quranic Text", desc: "Muṣṭafā al-Aʿẓamī's traditionalist response to Western scholarship; argues rasm unchanged since the Prophet. Dismissed by critical scholars as apologetic rather than historical-critical.", type: "schol", disp: "Methodologically incompatible with the manuscript and classical literary evidence" },
+    { date: "2007 CE", title: "Corpus Coranicum project launched", desc: "Berlin-Brandenburg Academy of Sciences launches Corpus Coranicum — digital database of early manuscripts, variant readings, intertextual materials, and a commentary on the text's historical context.", type: "schol" },
+    { date: "2010 CE", title: "Sadeghi & Bergmann — radiocarbon dating", desc: "Radiocarbon dating of Ṣanʿāʾ palimpsest parchment published in Arabica 57. Date range 578–669 CE (2σ); 75.1% probability parchment predates 646 CE.", type: "ms" },
+    { date: "2012 CE", title: "Sadeghi & Goudarzi — Ṣanʿāʾ 1", desc: "'Ṣanʿāʾ 1 and the Origins of the Qurʾān' (Der Islam 87). Documents ~100 rasm-level variants in the non-Uthmanic lower text. Confirms suras were formed before ʿUthmānic standardisation. Most important modern manuscript study.", type: "ms" },
+    { date: "2013 CE", title: "Nasser: Transmission of Variant Readings", desc: "Shady Nasser (Brill 2013) demonstrates canonical qirāʾāt fail the Sunnī tawātur criterion; shows early Muslim scholars treated them as legal ijtihād over the consonantal skeleton.", type: "schol" },
+    { date: "2014 CE", title: "Birmingham Quran radiocarbon dated", desc: "Oxford radiocarbon accelerator dates Mingana 1572a parchment to 568–645 CE (95.4% confidence). Alba Fedeli identifies it as part of the same manuscript as BnF Arabe 328(c) (Codex Parisino-Petropolitanus).", type: "ms" },
+    { date: "2014 CE", title: "Sinai: consonantal skeleton closure", desc: "'When Did the Consonantal Skeleton of the Qurʾān Reach Closure?' Parts I & II in BSOAS 77. Concludes the rasm closed c. 650–660 CE under ʿUthmān.", type: "schol" },
+    { date: "July 2015 CE", title: "Birmingham Quran publicly announced", desc: "University of Birmingham announces the radiocarbon results. Headlines claim 'oldest Quran ever found'; the date overlaps with but does not definitively predate the Uthmanic standardisation.", type: "ms" },
+    { date: "2017 CE", title: "Hilali: Ṣanʿāʾ is a school exercise", desc: "Asma Hilali argues the lower text is a scribal exercise book, not a genuine codex. Thesis subsequently rejected by Sinai (JAOS 2020), Cellard (2021), Sidky (2020), and van Putten.", type: "ms", disp: "Rejected by the field — Cellard's 2021 codicological study is definitive" },
+    { date: "2019 CE", title: "Van Putten: single written archetype", desc: "'The Grace of God' (BSOAS 82). Confirms a single written Uthmanic archetype from shared orthographic idiosyncrasies across 14 early manuscripts. Dates archetype to ʿUthmān's reign (644–656 CE), not al-Ḥajjāj.", type: "schol" },
+    { date: "2020 CE", title: "Sidky: regional codices stemma", desc: "'On the Regionality of Qurʾānic Codices' (JIQSA 5). Phylogenetic stemma identifies four ancestral codices from all examined manuscripts; confirms regional reading traditions.", type: "schol" },
+    { date: "2020 CE", title: "Van Putten: Hišām's Ibrāhām", desc: "JRAS paper demonstrates systematic rasm–qirāʾāt correspondence: each reader's tradition follows the rasm of their city's regional codex. Confirms canonical readings are textually, not purely orally, grounded.", type: "schol" },
+    { date: "2021 CE", title: "Cellard refutes Hilali", desc: "'The Ṣanʿāʾ Palimpsest: Materializing the Codices' (JNES 80). Codicological reconstruction definitively establishes lower text as a genuine full codex. Hilali's school-exercise hypothesis abandoned.", type: "ms" },
+    { date: "2022 CE", title: "Van Putten: Quranic Arabic (Brill)", desc: "Comprehensive open-access synthesis of the rasm–qirāʾāt relationship. Now the standard scholarly reference on how the consonantal skeleton and oral readings interrelate.", type: "schol" },
+    { date: "2026 CE (forthcoming)", title: "Van Putten: al-Taysīr translation", desc: "English translation of al-Dānī's al-Taysīr fī al-qirāʾāt al-sabʿ with linguistic commentary. Will be the most accessible scholarly reference for regional rasm differences.", type: "schol" },
+  ]},
+];
+
+const TYPE_DOTS   = { comp:"#D85A30", script:"#BA7517", qira:"#7F77DD", ms:"#1D9E75", print:"#378ADD", schol:"#888780" };
+const TYPE_LABELS = { comp:"Compilation", script:"Script & diacritics", qira:"Qirāʾāt", ms:"Manuscript", print:"Printing", schol:"Scholarship" };
+
+const tlState = { types: new Set(), search: "" };
+
+function renderTimelineFilters() {
+  const el = document.getElementById("tl-chips");
+  el.innerHTML = Object.entries(TYPE_LABELS).map(([k, v]) =>
+    `<button class="chip" data-tl-type="${k}">
+       <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${TYPE_DOTS[k]};margin-right:5px;vertical-align:middle;"></span>${v}
+     </button>`
+  ).join("");
+  el.querySelectorAll(".chip").forEach(b => {
+    b.onclick = () => {
+      const k = b.dataset.tlType;
+      if (tlState.types.has(k)) { tlState.types.delete(k); b.classList.remove("active"); }
+      else { tlState.types.add(k); b.classList.add("active"); }
+      renderTimeline();
+    };
+  });
+  document.getElementById("tl-search").oninput = (e) => {
+    tlState.search = e.target.value.toLowerCase().trim();
+    renderTimeline();
+  };
+}
+
+function clearTimelineFilters() {
+  tlState.types.clear();
+  tlState.search = "";
+  document.getElementById("tl-search").value = "";
+  document.querySelectorAll("[data-tl-type]").forEach(c => c.classList.remove("active"));
+  renderTimeline();
+}
+
+function eventMatches(e) {
+  if (tlState.types.size && !tlState.types.has(e.type)) return false;
+  if (tlState.search) {
+    const hay = `${e.date} ${e.title} ${e.desc} ${e.disp || ""}`.toLowerCase();
+    if (!hay.includes(tlState.search)) return false;
+  }
+  return true;
+}
+
+function renderTimeline() {
+  const el = document.getElementById("timeline-wrap");
+  let html = "";
+  let visibleCount = 0;
+  let isFirstEra = true;
+
+  ERAS.forEach(era => {
+    const visible = era.events.filter(eventMatches);
+    if (!visible.length) return;
+    visibleCount += visible.length;
+
+    html += `<div class="tl-era${isFirstEra ? ' first' : ''}">${era.label}</div>`;
+    isFirstEra = false;
+
+    visible.forEach((e, i) => {
+      const isLast = i === visible.length - 1;
+      const dotStyle = `background:${TYPE_DOTS[e.type]}`;
+      const dispBadge = e.disp
+        ? `<span class="tl-b tl-b-disp" title="${e.disp.replace(/"/g, '&quot;')}">⚠ disputed — ${e.disp}</span>`
+        : "";
+      html += `<div class="tl-row">
+        <div class="tl-date">${e.date}</div>
+        <div class="tl-line-col">
+          <div class="tl-dot" style="${dotStyle}"></div>
+          ${!isLast ? '<div class="tl-vl"></div>' : ''}
+        </div>
+        <div class="tl-content">
+          <div class="tl-title">${e.title}</div>
+          <div class="tl-desc">${e.desc}</div>
+          <div class="tl-badges">
+            <span class="tl-b tl-b-${e.type}">${TYPE_LABELS[e.type]}</span>
+            ${dispBadge}
+          </div>
+        </div>
+      </div>`;
+    });
+  });
+
+  if (!visibleCount) {
+    html = `<div class="empty">No timeline events match the current filters. <button class="chip-clear" onclick="clearTimelineFilters()">Clear filters</button></div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ============ INIT ============
+renderStats();
+renderFilters();
+renderTable();
+renderMatrix();
+renderTimelineFilters();
+renderTimeline();
+</script>
+
+</body>
+</html>
